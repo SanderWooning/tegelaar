@@ -1,9 +1,10 @@
 import typing
 from copy import deepcopy
 
+
 class Tegelaar:
-    def __init__(self, width: float, height: float, tiles: typing.List[typing.Tuple[float, float]], 
-                       prices: typing.Dict[typing.Tuple[float, float], float], budget: float):
+    def __init__(self, width: float, height: float, tiles: typing.List[typing.Tuple[float, float]],
+                 prices: typing.Dict[typing.Tuple[float, float], float], budget: float):
         """
         The Tegalaar object, containing all information and functions required for the assignment
 
@@ -20,7 +21,6 @@ class Tegelaar:
         self.area = self.width * self.height
         self.prices = prices
 
-
     @staticmethod
     def rotate_tile(tile: typing.Tuple[float, float]):
         """
@@ -30,36 +30,51 @@ class Tegelaar:
         """
         return tuple([tile[1], tile[0]])
 
-
     def get_price(self, tile: typing.Tuple[float, float]):
         """
-        Looks up and returns the price of the given tile.  
+        Looks up and returns the price of the given tile.
 
         :param tile: a tile (width_tile, height_tile)
         """
-        raise NotImplementedError()
+        print(tile)
+        print(self.prices)
+        print(self.rotate_tile(tile))
 
+        if tile in self.prices:
+            return self.prices[tile]
 
-    def tile_is_possible(self, tile: typing.Tuple[float, float], cost_tile: float, 
+        if self.rotate_tile(tile) in self.prices:
+            tile = self.rotate_tile(tile)
+            return self.prices[tile]
+
+    def tile_is_possible(self, tile: typing.Tuple[float, float], cost_tile: float,
                          total_cost: float, rem_surface: float):
+
         """
         Function that checks whether the tile can be used based on
-           - whether there is enough budget left 
+           - whether there is enough budget left
            - whether there is enough remaining surface to potentially hold a place for the tile
 
         :param tile: The tile (tile_width, tile_height)
         :param cost_tile: The cost of the tile
-        :param total_cost: The total cost of the current partial solution 
+        :param total_cost: The total cost of the current partial solution
         :param rem_surface: The surface that we yet have to fill
 
         Returns True if the tile can be potentially placed (enough budget and remaining surface)
         and False otherwise
         """
-        raise NotImplementedError()
 
+        if tile[0] * tile[1] > rem_surface:
+            return False
+
+        if cost_tile + total_cost > self.budget:
+            return False
+
+        else:
+            return True
 
     @staticmethod
-    def tiles_overlap(pos1: typing.Tuple[float, float], tile1: typing.Tuple[float, float], 
+    def tiles_overlap(pos1: typing.Tuple[float, float], tile1: typing.Tuple[float, float],
                       pos2: typing.Tuple[float, float], tile2: typing.Tuple[float, float]):
         """
         Function that checks whether two tiles are overlapping
@@ -71,8 +86,7 @@ class Tegelaar:
         """
         raise NotImplementedError()
 
-
-    def has_overlap(self, position: typing.Tuple[float, float], tile: typing.Tuple[float, float], 
+    def has_overlap(self, position: typing.Tuple[float, float], tile: typing.Tuple[float, float],
                     solution: typing.Dict[typing.Tuple[float, float], typing.Tuple[float, float]]):
         """
         Function that checks whether the tile overlaps with other tiles in the solution 
@@ -87,7 +101,7 @@ class Tegelaar:
         """
         raise NotImplementedError()
 
-    def can_place_tile(self, x: float, y: float, tile: typing.Tuple[float, float], 
+    def can_place_tile(self, x: float, y: float, tile: typing.Tuple[float, float],
                        partial_solution: typing.Dict[typing.Tuple[float, float], typing.Tuple[float, float]]):
         """
         Function that checks whether the tile can be placed in its current orientation
@@ -105,8 +119,8 @@ class Tegelaar:
         """
         raise NotImplementedError()
 
-    def add_tile_to_solution(self, x: float, y: float, tile: typing.Tuple[float, float], 
-                             pos: typing.Dict[typing.Tuple[float, float], typing.Tuple[float, float]], 
+    def add_tile_to_solution(self, x: float, y: float, tile: typing.Tuple[float, float],
+                             pos: typing.Dict[typing.Tuple[float, float], typing.Tuple[float, float]],
                              partial_solution: typing.Dict[typing.Tuple[float, float], typing.Tuple[float, float]]):
         """
         Function that adds a tile in the current orientation to the partial solution
@@ -127,10 +141,10 @@ class Tegelaar:
         """
         raise NotImplementedError()
 
-    def recursive_search(self, pos:typing.Set[typing.Tuple[float, float]], rem_surface: float, 
-                          rem_tiles: typing.List[typing.Tuple[float, float]], 
-                          solution: typing.Dict[typing.Tuple[float, float], typing.Tuple[float, float]], 
-                          total_cost: float):
+    def recursive_search(self, pos: typing.Set[typing.Tuple[float, float]], rem_surface: float,
+                         rem_tiles: typing.List[typing.Tuple[float, float]],
+                         solution: typing.Dict[typing.Tuple[float, float], typing.Tuple[float, float]],
+                         total_cost: float):
         """
         Private function. Feel free to determine your own set of arguments.
         Will not be called from unit tests, but only by this function (recursively) and
@@ -146,8 +160,6 @@ class Tegelaar:
         :param total_cost: the total cost of the partial solution
         """
         raise NotImplementedError()
-
-
 
     def start_search(self):
         """
@@ -167,13 +179,12 @@ class Tegelaar:
                  Note: a valid tiling pattern as a dictionary mapping the bottom left corners
                  of tiles to the tiles used (width, height)
         """
-        return self.recursive_search(pos=set([(0,0)]), rem_surface=self.area, rem_tiles=deepcopy(self.tiles), 
+        return self.recursive_search(pos=set([(0, 0)]), rem_surface=self.area, rem_tiles=deepcopy(self.tiles),
                                      solution=dict(), total_cost=0)
 
 
-
-
-def visualize_solution(width: float, height: float, solution: typing.Dict[typing.Tuple[float, float], typing.Tuple[float, float]]):
+def visualize_solution(width: float, height: float,
+                       solution: typing.Dict[typing.Tuple[float, float], typing.Tuple[float, float]]):
     """
     Function that visualizes a solution on a rectangular surface of width x height
 
@@ -181,7 +192,7 @@ def visualize_solution(width: float, height: float, solution: typing.Dict[typing
     :param height: The height of the surface
     :param solution: The solution we want to visualize
     """
-    #https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.Rectangle.html
+    # https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.Rectangle.html
     if solution is None:
         print("Solution was None -> could not visualize")
         return
@@ -189,12 +200,9 @@ def visualize_solution(width: float, height: float, solution: typing.Dict[typing
     import matplotlib.pyplot as plt
     from matplotlib.patches import Rectangle
     fig, ax = plt.subplots()
-    for (x,y), (w,h) in solution.items():
+    for (x, y), (w, h) in solution.items():
         ax.add_patch(Rectangle((x, y), w, h, edgecolor='black'))
-                    
-    plt.ylim(0, max(width, height))     
-    plt.xlim(0, max(width, height))                 
+
+    plt.ylim(0, max(width, height))
+    plt.xlim(0, max(width, height))
     plt.show()
-
-
-
