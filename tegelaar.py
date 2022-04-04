@@ -76,6 +76,10 @@ class Tegelaar:
     @staticmethod
     def tiles_overlap(pos1: typing.Tuple[float, float], tile1: typing.Tuple[float, float],
                       pos2: typing.Tuple[float, float], tile2: typing.Tuple[float, float]):
+
+        print(pos1)
+
+
         """
         Function that checks whether two tiles are overlapping
 
@@ -84,12 +88,13 @@ class Tegelaar:
         :param pos2: the bottom-left corner (x2, y2) where tile2 starts
         :param tile2: (width_tile2, height_tile2)
         """
-        raise NotImplementedError()
 
     def has_overlap(self, position: typing.Tuple[float, float], tile: typing.Tuple[float, float],
                     solution: typing.Dict[typing.Tuple[float, float], typing.Tuple[float, float]]):
+
+
         """
-        Function that checks whether the tile overlaps with other tiles in the solution 
+        Function that checks whether the tile overlaps with other tiles in the solution
         if it would be placed on the given position
 
         :param position: the (x,y) coordinate pair where the tile is to be placed
@@ -99,7 +104,37 @@ class Tegelaar:
         Returns True if there is overlap between the tile on position and the other tiles in the solution
         False otherwise
         """
-        raise NotImplementedError()
+
+
+
+        print(solution)
+        print(position)
+        print(tile)
+        visualize_solution(width=self.width, height=self.height, solution=solution)
+
+        total_area = 0
+
+
+
+
+
+        # Step 2. Check if width crosses
+
+
+        for key, value in solution.items():
+
+            # Step 1. Check if starting position lays inside of square
+            if key[0] > position[0] > value[0] and key[1] > position[1] and position[1] < value[1]:
+
+
+            if position[0] + tile[0]
+
+            width = key[0] + value[0]
+
+
+            print(key, value)
+
+
 
     def can_place_tile(self, x: float, y: float, tile: typing.Tuple[float, float],
                        partial_solution: typing.Dict[typing.Tuple[float, float], typing.Tuple[float, float]]):
