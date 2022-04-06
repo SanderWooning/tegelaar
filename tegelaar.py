@@ -91,11 +91,13 @@ class Tegelaar:
             print("Starting postion is inside square, will result in a overlap always")
             return True
 
+
+        # Step 2. Check if the box crosses another tile on the right.
         if pos1[1] < pos2[1] < (pos1[1] + tile1[1]) or pos1[1] < pos2[1] + tile2[1] < (pos1[1] + tile1[1]):
-            print("Here")
             if pos2[0] + tile2[0] > pos1[0]:
                 return True
 
+        # Step 3. Check if
         if pos1[0] < pos2[0] < (pos1[0] + tile1[0]) or pos1[0] < pos2[0] + tile2[0] < (pos1[0] + tile1[0]):
             if pos2[1] + tile2[1] > pos2[0]:
                 return True
@@ -118,7 +120,6 @@ class Tegelaar:
         False otherwise
         """
 
-        visualize_solution(width=self.width, height=self.height, solution=solution)
 
         for key, value in solution.items():
             if self.tiles_overlap(pos1=key, tile1=value, pos2=position, tile2=tile):
@@ -203,6 +204,10 @@ class Tegelaar:
         Returns a list of new positions (x', y') that were added to pos. Importantly, new means that
         they were not present before in pos.
         """
+        visualize_solution(solution=partial_solution, width=self.width, height=self.height)
+
+        print(pos)
+
         raise NotImplementedError()
 
     def recursive_search(self, pos: typing.Set[typing.Tuple[float, float]], rem_surface: float,
