@@ -86,7 +86,6 @@ class Tegelaar:
         :param tile2: (width_tile2, height_tile2)
         """
 
-
         # Step 1. Check if starting position is in other square.
         if pos1[0] < pos2[0] < (pos1[0] + tile1[0]) and pos1[1] < pos2[1] < (pos1[1] + tile1[1]):
             print("Starting postion is inside square, will result in a overlap always")
@@ -122,34 +121,40 @@ class Tegelaar:
         visualize_solution(width=self.width, height=self.height, solution=solution)
 
         for key, value in solution.items():
-
-            starting_point_tile_x, ending_point_tile_x = key[0], key[0] + value[0]
-            starting_point_tile_y, ending_point_tile_y = key[1], key[1] + value[1]
-
-            print("X Start and X end", starting_point_tile_x, ending_point_tile_x, position[0], tile[0])
-            print("Y Start and Y end", starting_point_tile_y, ending_point_tile_y, position[1], tile[1])
-
-            # Step 1. Check if starting position lays inside of square
-            if starting_point_tile_x < position[0] < ending_point_tile_x and starting_point_tile_y < position[
-                1] < ending_point_tile_y:
-                print("Starting postion is inside square, will result in a overlap always")
+            if self.tiles_overlap(pos1=key, tile1=value, pos2=position, tile2=tile):
                 return True
 
-            if starting_point_tile_y < position[1] < ending_point_tile_y or starting_point_tile_y < position[1] + tile[
-                1] < ending_point_tile_y:
-                print("Here")
-                if position[0] + tile[0] > starting_point_tile_x:
-                    return True
+        return False
 
-            if starting_point_tile_x < position[0] < ending_point_tile_x or starting_point_tile_x < position[0] + \
-                    position[0] < ending_point_tile_x:
-                print("Here")
-                if position[1] + tile[1] > starting_point_tile_y:
-                    return True
-
-
-        else:
-            return False
+        # for key, value in solution.items():
+        #
+        #     starting_point_tile_x, ending_point_tile_x = key[0], key[0] + value[0]
+        #     starting_point_tile_y, ending_point_tile_y = key[1], key[1] + value[1]
+        #
+        #     print("X Start and X end", starting_point_tile_x, ending_point_tile_x, position[0], tile[0])
+        #     print("Y Start and Y end", starting_point_tile_y, ending_point_tile_y, position[1], tile[1])
+        #
+        #     # Step 1. Check if starting position lays inside of square
+        #     if starting_point_tile_x < position[0] < ending_point_tile_x and starting_point_tile_y < position[
+        #         1] < ending_point_tile_y:
+        #         print("Starting postion is inside square, will result in a overlap always")
+        #         return True
+        #
+        #     if starting_point_tile_y < position[1] < ending_point_tile_y or starting_point_tile_y < position[1] + tile[
+        #         1] < ending_point_tile_y:
+        #         print("Here")
+        #         if position[0] + tile[0] > starting_point_tile_x:
+        #             return True
+        #
+        #     if starting_point_tile_x < position[0] < ending_point_tile_x or starting_point_tile_x < position[0] + \
+        #             position[0] < ending_point_tile_x:
+        #         print("Here")
+        #         if position[1] + tile[1] > starting_point_tile_y:
+        #             return True
+        #
+        #
+        # else:
+        #     return False
 
     def can_place_tile(self, x: float, y: float, tile: typing.Tuple[float, float],
                        partial_solution: typing.Dict[typing.Tuple[float, float], typing.Tuple[float, float]]):
@@ -167,7 +172,16 @@ class Tegelaar:
         Returns True if the tile can be placed (does not violate mentioned constraints)
         and False otherwise
         """
-        raise NotImplementedError()
+
+        if x + tile[0] > self.width or y + tile[1] > self.height:
+            return False
+
+        if self.has_overlap(solution=partial_solution, position=(x,y), tile=tile):
+            return False
+
+        else:
+            return True
+
 
     def add_tile_to_solution(self, x: float, y: float, tile: typing.Tuple[float, float],
                              pos: typing.Dict[typing.Tuple[float, float], typing.Tuple[float, float]],
