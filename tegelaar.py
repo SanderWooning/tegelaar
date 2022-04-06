@@ -105,34 +105,41 @@ class Tegelaar:
         False otherwise
         """
 
-
-
-        print(solution)
-        print(position)
-        print(tile)
         visualize_solution(width=self.width, height=self.height, solution=solution)
 
-        total_area = 0
-
-
-
-
-
-        # Step 2. Check if width crosses
 
 
         for key, value in solution.items():
 
+            starting_point_tile_x, ending_point_tile_x = key[0], key[0] + value[0]
+            starting_point_tile_y, ending_point_tile_y = key[1], key[1] + value[1]
+
+            print("X Start and X end",starting_point_tile_x, ending_point_tile_x, position[0], tile[0])
+            print("Y Start and Y end",starting_point_tile_y, ending_point_tile_y, position[1], tile[1])
+
             # Step 1. Check if starting position lays inside of square
-            if key[0] > position[0] > value[0] and key[1] > position[1] and position[1] < value[1]:
+            if starting_point_tile_x < position[0] < ending_point_tile_x and starting_point_tile_y < position[1] < ending_point_tile_y:
+                print("Starting postion is inside square, will result in a overlap always")
+                return True
+
+            if starting_point_tile_y < position[1] < ending_point_tile_y or starting_point_tile_y < position[1] + tile[1] < ending_point_tile_y:
+                print("Here")
+                if position[0] + tile[0] > starting_point_tile_x:
+                    return True
 
 
-            if position[0] + tile[0]
+            if starting_point_tile_x < position[0] < ending_point_tile_x or starting_point_tile_x < position[0] + position[0] < ending_point_tile_x:
+                print("Here")
+                if position[1] + tile[1] > starting_point_tile_y:
+                    return True
 
-            width = key[0] + value[0]
+
+        else:
+            return False
 
 
-            print(key, value)
+
+
 
 
 

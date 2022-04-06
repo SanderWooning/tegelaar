@@ -79,6 +79,19 @@ class TestTegelaar(unittest.TestCase):
 
         self.assertTrue(tg.has_overlap(position=(0,30), tile=(20,10), solution=current_solution))
         self.assertFalse(tg.has_overlap(position=(0,30), tile=(10,10), solution=current_solution))
+
+
+    def test_has_overlap_own_case(self):
+        height = 40
+        width = 20
+        current_solution = {(0,0): (10, 20), (10,0): (10, 10), (10,10):(10,10), (10,20):(10,20)}
+        tiles = [(30,10), (50,50), (60,60), (10,10), (10,10), (10,10),(10,20),(10,20)]
+        prices = {x:x[0]*x[1] for x in tiles}
+        budget = float("inf")
+        tg = Tegelaar(width, height, tiles, prices, budget)
+
+        self.assertTrue(tg.has_overlap(position=(5,10), tile=(10,10), solution=current_solution))
+
         
     def test_can_place_tile(self):
         height = 40
