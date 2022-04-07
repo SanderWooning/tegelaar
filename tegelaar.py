@@ -86,11 +86,16 @@ class Tegelaar:
         :param tile2: (width_tile2, height_tile2)
         """
 
+        tile1_starting_x, tile1_ending_x = pos1[0], pos1[0] + tile1[0]
+        tile1_starting_y, tile1_ending_y = pos1[1], pos1[1] + tile1[1]
+
+        tile2_starting_x, tile2_ending_x = pos2[0], pos2[0] + tile2[0]
+        tile2_starting_y, tile2_ending_y = pos2[1], pos2[1] + tile2[1]
+
         # Step 1. Check if starting position is in other square.
-        if pos1[0] < pos2[0] < (pos1[0] + tile1[0]) and pos1[1] < pos2[1] < (pos1[1] + tile1[1]):
+        if tile1_starting_x < tile2_starting_x < tile1_ending_x and tile1_starting_y < tile2_starting_y < tile1_ending_y:
             print("Starting postion is inside square, will result in a overlap always")
             return True
-
 
         # Step 2. Check if the box crosses another tile on the right.
         if pos1[1] < pos2[1] < (pos1[1] + tile1[1]) or pos1[1] < pos2[1] + tile2[1] < (pos1[1] + tile1[1]):
@@ -119,7 +124,6 @@ class Tegelaar:
         Returns True if there is overlap between the tile on position and the other tiles in the solution
         False otherwise
         """
-
 
         for key, value in solution.items():
             if self.tiles_overlap(pos1=key, tile1=value, pos2=position, tile2=tile):
@@ -177,12 +181,11 @@ class Tegelaar:
         if x + tile[0] > self.width or y + tile[1] > self.height:
             return False
 
-        if self.has_overlap(solution=partial_solution, position=(x,y), tile=tile):
+        if self.has_overlap(solution=partial_solution, position=(x, y), tile=tile):
             return False
 
         else:
             return True
-
 
     def add_tile_to_solution(self, x: float, y: float, tile: typing.Tuple[float, float],
                              pos: typing.Dict[typing.Tuple[float, float], typing.Tuple[float, float]],
@@ -206,8 +209,10 @@ class Tegelaar:
         """
         visualize_solution(solution=partial_solution, width=self.width, height=self.height)
 
-        print(pos)
+        if not self.has_overlap(solution=partial_solution, position=(x, y), tile=tile):
+            partial_solution.update({(x,y): tile})
 
+        print(partial_solution)
         raise NotImplementedError()
 
     def recursive_search(self, pos: typing.Set[typing.Tuple[float, float]], rem_surface: float,
