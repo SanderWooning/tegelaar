@@ -91,7 +91,6 @@ class Tegelaar:
                 ((pos1[1] + tile1[1]) <= pos2[1]) or \
                 (pos1[1] >= (pos2[1] + tile2[1])):
             return False
-
         else:
             return True
 
@@ -182,22 +181,18 @@ class Tegelaar:
         Returns a list of new positions (x', y') that were added to pos. Importantly, new means that
         they were not present before in pos.
         """
-        visualize_solution(solution=partial_solution, width=self.width, height=self.height)
-
         new_positions = []
 
-        for positions in pos:
-            if not self.has_overlap(solution=partial_solution, position=positions, tile=tile):
-                if positions not in partial_solution:
-                    partial_solution.update({positions: tile})
+        partial_solution[(x,y)] = tile
 
-                    x_position = (positions[0] + tile[0], positions[1])
-                    if x_position not in partial_solution:
-                        new_positions.append(x_position)
+        right_corner = (x + tile[0], y)
+        if right_corner not in pos:
+            new_positions.append(right_corner)
 
-                    y_position = (positions[0], positions[1] + tile[1])
-                    if y_position not in partial_solution:
-                        new_positions.append(y_position)
+
+        top_corner = (x, y + tile[1])
+        if top_corner not in partial_solution:
+            new_positions.append(top_corner)
 
         return new_positions
 
@@ -205,6 +200,9 @@ class Tegelaar:
                          rem_tiles: typing.List[typing.Tuple[float, float]],
                          solution: typing.Dict[typing.Tuple[float, float], typing.Tuple[float, float]],
                          total_cost: float):
+
+
+
         """
         Private function. Feel free to determine your own set of arguments.
         Will not be called from unit tests, but only by this function (recursively) and
@@ -219,6 +217,26 @@ class Tegelaar:
         :param solution: the partial solution (same structure as pos)
         :param total_cost: the total cost of the partial solution
         """
+
+        for position in pos:
+            for tile in rem_tiles:
+
+                config = [tile, self.rotate_tile(tile)]
+                tile_price = self.get_price(tile=tile)
+
+                for configs in config:
+                    if self.tile_is_possible(tile=configs, cost_tile=tile_price, total_cost=total_cost, rem_surface=rem_surface):
+                        if self.can_place_tile(x=position[0], y=position[1], tile=configs, partial_solution=solution):
+
+                            self.add_tile_to_solution(x=position[0], y=position[1], tile=configs, pos=solution, partial_solution= solution)
+
+
+                            #Different update function
+                            del rem_tiles[tile]
+
+
+
+
         raise NotImplementedError()
 
     def start_search(self):
@@ -231,7 +249,7 @@ class Tegelaar:
         If you encounter a schedule that you already know to be invalid, you
         should backtrack and try another option.
         This function can be implemented by a single call to another function,
-        _build_schedule_recursive. You are allowed to change the argumentes of
+        _build_schedule_recursive. You are allowed to change the arguments of
         the function _build_schedule_recursive
 
         :return: a tuple (tiling pattern, total cost) if a valid tiling pattern exists 
