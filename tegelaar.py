@@ -86,24 +86,34 @@ class Tegelaar:
         :param tile2: (width_tile2, height_tile2)
         """
 
-        # Step 1. Check if starting position is in other square.
-        if pos1[0] < pos2[0] < (pos1[0] + tile1[0]) and pos1[1] < pos2[1] < (pos1[1] + tile1[1]):
-            print("Starting postion is inside square, will result in a overlap always")
-            return True
-
-
-        # Step 2. Check if the box crosses another tile on the right.
-        if pos1[1] < pos2[1] < (pos1[1] + tile1[1]) or pos1[1] < pos2[1] + tile2[1] < (pos1[1] + tile1[1]):
-            if pos2[0] + tile2[0] > pos1[0]:
-                return True
-
-        # Step 3. Check if
-        if pos1[0] < pos2[0] < (pos1[0] + tile1[0]) or pos1[0] < pos2[0] + tile2[0] < (pos1[0] + tile1[0]):
-            if pos2[1] + tile2[1] > pos2[0]:
-                return True
+        if (pos1[0] >= (pos2[0] + tile2[0])) or \
+                ((pos1[0] + tile1[0]) <= pos2[0]) or \
+                ((pos1[1] + tile1[1]) <= pos2[1]) or \
+                (pos1[1] >= (pos2[1] + tile2[1])):
+            return False
 
         else:
-            return False
+            return True
+
+        # # Step 1. Check if starting position is in other square.
+        # if pos1[0] < pos2[0] < (pos1[0] + tile1[0]) and pos1[1] < pos2[1] < (pos1[1] + tile1[1]):
+        #     print("Starting position is inside square, will result in a overlap always")
+        #     return True
+        #
+        # # Step 2. Check if the box crosses another tile on the right.
+        # if  pos1[1] < pos2[1] < (pos1[1] + tile1[1]) or \
+        #     pos1[1] < pos2[1] + tile2[1] < (pos1[1] + tile1[1]):
+        #     if pos2[0] + tile2[0] > pos1[0]:
+        #         return True
+        #
+        # # Step 3. Check if
+        # if  pos1[0] < pos2[0] < (pos1[0] + tile1[0]) or \
+        #     pos1[0] < pos2[0] + tile2[0] < (pos1[0] + tile1[0]):
+        #     if pos2[1] + tile2[1] > pos1[0]:
+        #         return True
+        #
+        # else:
+        #     return False
 
     def has_overlap(self, position: typing.Tuple[float, float], tile: typing.Tuple[float, float],
                     solution: typing.Dict[typing.Tuple[float, float], typing.Tuple[float, float]]):
@@ -120,42 +130,11 @@ class Tegelaar:
         False otherwise
         """
 
-
         for key, value in solution.items():
             if self.tiles_overlap(pos1=key, tile1=value, pos2=position, tile2=tile):
                 return True
 
         return False
-
-        # for key, value in solution.items():
-        #
-        #     starting_point_tile_x, ending_point_tile_x = key[0], key[0] + value[0]
-        #     starting_point_tile_y, ending_point_tile_y = key[1], key[1] + value[1]
-        #
-        #     print("X Start and X end", starting_point_tile_x, ending_point_tile_x, position[0], tile[0])
-        #     print("Y Start and Y end", starting_point_tile_y, ending_point_tile_y, position[1], tile[1])
-        #
-        #     # Step 1. Check if starting position lays inside of square
-        #     if starting_point_tile_x < position[0] < ending_point_tile_x and starting_point_tile_y < position[
-        #         1] < ending_point_tile_y:
-        #         print("Starting postion is inside square, will result in a overlap always")
-        #         return True
-        #
-        #     if starting_point_tile_y < position[1] < ending_point_tile_y or starting_point_tile_y < position[1] + tile[
-        #         1] < ending_point_tile_y:
-        #         print("Here")
-        #         if position[0] + tile[0] > starting_point_tile_x:
-        #             return True
-        #
-        #     if starting_point_tile_x < position[0] < ending_point_tile_x or starting_point_tile_x < position[0] + \
-        #             position[0] < ending_point_tile_x:
-        #         print("Here")
-        #         if position[1] + tile[1] > starting_point_tile_y:
-        #             return True
-        #
-        #
-        # else:
-        #     return False
 
     def can_place_tile(self, x: float, y: float, tile: typing.Tuple[float, float],
                        partial_solution: typing.Dict[typing.Tuple[float, float], typing.Tuple[float, float]]):
@@ -177,12 +156,11 @@ class Tegelaar:
         if x + tile[0] > self.width or y + tile[1] > self.height:
             return False
 
-        if self.has_overlap(solution=partial_solution, position=(x,y), tile=tile):
+        if self.has_overlap(solution=partial_solution, position=(x, y), tile=tile):
             return False
 
         else:
             return True
-
 
     def add_tile_to_solution(self, x: float, y: float, tile: typing.Tuple[float, float],
                              pos: typing.Dict[typing.Tuple[float, float], typing.Tuple[float, float]],
@@ -206,9 +184,22 @@ class Tegelaar:
         """
         visualize_solution(solution=partial_solution, width=self.width, height=self.height)
 
-        print(pos)
+        new_positions = []
 
-        raise NotImplementedError()
+        for positions in pos:
+            if not self.has_overlap(solution=partial_solution, position=positions, tile=tile):
+                if positions not in partial_solution:
+                    partial_solution.update({positions: tile})
+
+                    x_position = (positions[0] + tile[0], positions[1])
+                    if x_position not in partial_solution:
+                        new_positions.append(x_position)
+
+                    y_position = (positions[0], positions[1] + tile[1])
+                    if y_position not in partial_solution:
+                        new_positions.append(y_position)
+
+        return new_positions
 
     def recursive_search(self, pos: typing.Set[typing.Tuple[float, float]], rem_surface: float,
                          rem_tiles: typing.List[typing.Tuple[float, float]],
