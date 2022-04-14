@@ -214,11 +214,12 @@ class Tegelaar:
 
         # Positive base-cases
         if rem_surface == 0:
+            print(solution)
             return solution, total_cost
 
 
         if len(rem_tiles) == 0:
-            return None
+            return None, None
 
         # total_tile_surface = 0
         # for tiles in rem_tiles:
@@ -227,7 +228,9 @@ class Tegelaar:
         # if total_tile_surface < rem_surface:
         #     return (None, None)
 
-        for position in pos:
+        initial_pos = deepcopy(pos)
+
+        for position in initial_pos:
             for tile in rem_tiles:
 
                 config = [tile, self.rotate_tile(tile)]
@@ -241,23 +244,21 @@ class Tegelaar:
                     for configs in config:
                         if self.can_place_tile(x=position[0], y=position[1], tile=configs, partial_solution=solution):
                             res_postions = self.add_tile_to_solution(x=position[0], y=position[1], tile=configs,
-                                                                     pos=solution,
+                                                                     pos=pos,
                                                                      partial_solution=solution)
 
                             pos.remove(position)
-                            new_pos = set()
                             for i in res_postions:
-                                new_pos.add(i)
+                                pos.add(i)
 
                             rem_surface = total_area - tile_area
                             rem_tiles.remove(tile)
                             total_cost = total_cost + tile_price
-                            solution[position] = configs
 
-                            possible_solution = self.recursive_search(pos=new_pos, rem_surface=rem_surface, rem_tiles=rem_tiles,
+                            possible_solution = self.recursive_search(pos=pos, rem_surface=rem_surface, rem_tiles=rem_tiles,
                                                                       solution=solution, total_cost=total_cost)
 
-                            if possible_solution is not None:
+                            if possible_solution != (None, None):
                                 return possible_solution
 
                             pos.add(position)
@@ -266,7 +267,7 @@ class Tegelaar:
                             total_cost = total_cost - tile_price
                             del solution[position]
 
-        return None
+        return None, None
 
 
 
