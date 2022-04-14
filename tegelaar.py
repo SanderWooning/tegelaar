@@ -223,12 +223,19 @@ class Tegelaar:
 
                 config = [tile, self.rotate_tile(tile)]
                 tile_price = self.get_price(tile=tile)
+                tile_area = tile[0] * tile[1]
 
                 for configs in config:
                     if self.tile_is_possible(tile=configs, cost_tile=tile_price, total_cost=total_cost, rem_surface=rem_surface):
                         if self.can_place_tile(x=position[0], y=position[1], tile=configs, partial_solution=solution):
 
-                            self.add_tile_to_solution(x=position[0], y=position[1], tile=configs, pos=solution, partial_solution= solution)
+                            pos = self.add_tile_to_solution(x=position[0], y=position[1], tile=configs, pos=solution, partial_solution= solution)
+                            rem_surface = rem_surface - tile_area
+                            rem_tiles = rem_tiles.pop(tile)
+                            total_cost = total_cost + tile_price
+                            solution[position] = config
+
+                            self.recursive_search(pos=pos, rem_surface=rem_surface, rem_tiles=rem_tiles, solution=solution, total_cost=total_cost)
 
 
                             #Different update function
