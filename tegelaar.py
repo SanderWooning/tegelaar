@@ -7,7 +7,6 @@ class Tegelaar:
                  prices: typing.Dict[typing.Tuple[float, float], float], budget: float):
         """
         The Tegalaar object, containing all information and functions required for the assignment
-
         :param width: The width of the rectangular area that has to be tiled
         :param height: The height of the rectangular area that has to be tiled
         :param tiles: A list of tiles (width_tile, height_tile)
@@ -24,8 +23,7 @@ class Tegelaar:
     @staticmethod
     def rotate_tile(tile: typing.Tuple[float, float]):
         """
-        Rotates a tile 
-
+        Rotates a tile
         :param tile: a tile (width_tile, height_tile)
         """
         return tuple([tile[1], tile[0]])
@@ -33,7 +31,6 @@ class Tegelaar:
     def get_price(self, tile: typing.Tuple[float, float]):
         """
         Looks up and returns the price of the given tile.
-
         :param tile: a tile (width_tile, height_tile)
         """
         print(tile)
@@ -54,12 +51,10 @@ class Tegelaar:
         Function that checks whether the tile can be used based on
            - whether there is enough budget left
            - whether there is enough remaining surface to potentially hold a place for the tile
-
         :param tile: The tile (tile_width, tile_height)
         :param cost_tile: The cost of the tile
         :param total_cost: The total cost of the current partial solution
         :param rem_surface: The surface that we yet have to fill
-
         Returns True if the tile can be potentially placed (enough budget and remaining surface)
         and False otherwise
         """
@@ -79,36 +74,39 @@ class Tegelaar:
 
         """
         Function that checks whether two tiles are overlapping
-
         :param pos1: the bottom-left corner (x1, y1) where tile1 starts
         :param tile1: (width_tile1, height_tile1)
         :param pos2: the bottom-left corner (x2, y2) where tile2 starts
         :param tile2: (width_tile2, height_tile2)
         """
 
-        tile1_starting_x, tile1_ending_x = pos1[0], pos1[0] + tile1[0]
-        tile1_starting_y, tile1_ending_y = pos1[1], pos1[1] + tile1[1]
-
-        tile2_starting_x, tile2_ending_x = pos2[0], pos2[0] + tile2[0]
-        tile2_starting_y, tile2_ending_y = pos2[1], pos2[1] + tile2[1]
-
-        # Step 1. Check if starting position is in other square.
-        if tile1_starting_x < tile2_starting_x < tile1_ending_x and tile1_starting_y < tile2_starting_y < tile1_ending_y:
-            print("Starting postion is inside square, will result in a overlap always")
+        if (pos1[0] >= (pos2[0] + tile2[0])) or \
+                ((pos1[0] + tile1[0]) <= pos2[0]) or \
+                ((pos1[1] + tile1[1]) <= pos2[1]) or \
+                (pos1[1] >= (pos2[1] + tile2[1])):
+            return False
+        else:
             return True
 
-        # Step 2. Check if the box crosses another tile on the right.
-        if pos1[1] < pos2[1] < (pos1[1] + tile1[1]) or pos1[1] < pos2[1] + tile2[1] < (pos1[1] + tile1[1]):
-            if pos2[0] + tile2[0] > pos1[0]:
-                return True
-
-        # Step 3. Check if
-        if pos1[0] < pos2[0] < (pos1[0] + tile1[0]) or pos1[0] < pos2[0] + tile2[0] < (pos1[0] + tile1[0]):
-            if pos2[1] + tile2[1] > pos2[0]:
-                return True
-
-        else:
-            return False
+        # # Step 1. Check if starting position is in other square.
+        # if pos1[0] < pos2[0] < (pos1[0] + tile1[0]) and pos1[1] < pos2[1] < (pos1[1] + tile1[1]):
+        #     print("Starting position is inside square, will result in a overlap always")
+        #     return True
+        #
+        # # Step 2. Check if the box crosses another tile on the right.
+        # if  pos1[1] < pos2[1] < (pos1[1] + tile1[1]) or \
+        #     pos1[1] < pos2[1] + tile2[1] < (pos1[1] + tile1[1]):
+        #     if pos2[0] + tile2[0] > pos1[0]:
+        #         return True
+        #
+        # # Step 3. Check if
+        # if  pos1[0] < pos2[0] < (pos1[0] + tile1[0]) or \
+        #     pos1[0] < pos2[0] + tile2[0] < (pos1[0] + tile1[0]):
+        #     if pos2[1] + tile2[1] > pos1[0]:
+        #         return True
+        #
+        # else:
+        #     return False
 
     def has_overlap(self, position: typing.Tuple[float, float], tile: typing.Tuple[float, float],
                     solution: typing.Dict[typing.Tuple[float, float], typing.Tuple[float, float]]):
@@ -116,11 +114,9 @@ class Tegelaar:
         """
         Function that checks whether the tile overlaps with other tiles in the solution
         if it would be placed on the given position
-
         :param position: the (x,y) coordinate pair where the tile is to be placed
         :param tile: the tile (width_tile1, height_tile1)
         :param solution: the current solution (dictionary mapping positions (x,y)->(tile_width, tile_height))
-
         Returns True if there is overlap between the tile on position and the other tiles in the solution
         False otherwise
         """
@@ -131,36 +127,6 @@ class Tegelaar:
 
         return False
 
-        # for key, value in solution.items():
-        #
-        #     starting_point_tile_x, ending_point_tile_x = key[0], key[0] + value[0]
-        #     starting_point_tile_y, ending_point_tile_y = key[1], key[1] + value[1]
-        #
-        #     print("X Start and X end", starting_point_tile_x, ending_point_tile_x, position[0], tile[0])
-        #     print("Y Start and Y end", starting_point_tile_y, ending_point_tile_y, position[1], tile[1])
-        #
-        #     # Step 1. Check if starting position lays inside of square
-        #     if starting_point_tile_x < position[0] < ending_point_tile_x and starting_point_tile_y < position[
-        #         1] < ending_point_tile_y:
-        #         print("Starting postion is inside square, will result in a overlap always")
-        #         return True
-        #
-        #     if starting_point_tile_y < position[1] < ending_point_tile_y or starting_point_tile_y < position[1] + tile[
-        #         1] < ending_point_tile_y:
-        #         print("Here")
-        #         if position[0] + tile[0] > starting_point_tile_x:
-        #             return True
-        #
-        #     if starting_point_tile_x < position[0] < ending_point_tile_x or starting_point_tile_x < position[0] + \
-        #             position[0] < ending_point_tile_x:
-        #         print("Here")
-        #         if position[1] + tile[1] > starting_point_tile_y:
-        #             return True
-        #
-        #
-        # else:
-        #     return False
-
     def can_place_tile(self, x: float, y: float, tile: typing.Tuple[float, float],
                        partial_solution: typing.Dict[typing.Tuple[float, float], typing.Tuple[float, float]]):
         """
@@ -168,12 +134,10 @@ class Tegelaar:
         on location (x,y) based on:
            - whether it exceeds the boundaries of the rectangular surface (self.width, self.height)
            - whether there is overlap with other tiles in the partial solution
-
         :param x: The x coordinate where the tile will be placed
         :param y: The y coordinate where the tile will be placed
         :param tile: The tile that is being placed on location (x,y)
         :param partial_solution: the partial solution (dictionary mapping positions (x_co,y_co) -> tile)
-
         Returns True if the tile can be placed (does not violate mentioned constraints)
         and False otherwise
         """
@@ -195,60 +159,92 @@ class Tegelaar:
         and adds new positions to the set of positions where new tiles can be placed
         (because 2 new tiles can be placed - on top of the tile on (x,y) and to the right
         of that tile)
-
         :param x: The x coordinate where the tile will be placed
         :param y: The y coordinate where the tile will be placed
         :param tile: The tile that is being placed on location (x,y)
-        :param pos: The set of bottom left corners on which we can potentially put tiles 
+        :param pos: The set of bottom left corners on which we can potentially put tiles
                     (initially only (0,0) ~ start filling the area from the bottom left)
         :param partial_solution: the partial solution following the same format as pos
                                  with tiles that have already been placed
-
         Returns a list of new positions (x', y') that were added to pos. Importantly, new means that
         they were not present before in pos.
         """
-        visualize_solution(solution=partial_solution, width=self.width, height=self.height)
+        new_positions = []
 
-        if not self.has_overlap(solution=partial_solution, position=(x, y), tile=tile):
-            partial_solution.update({(x,y): tile})
+        partial_solution[(x,y)] = tile
 
-        print(partial_solution)
-        raise NotImplementedError()
+        right_corner = (x + tile[0], y)
+        if right_corner not in pos:
+            new_positions.append(right_corner)
+
+
+        top_corner = (x, y + tile[1])
+        if top_corner not in partial_solution:
+            new_positions.append(top_corner)
+
+        return new_positions
 
     def recursive_search(self, pos: typing.Set[typing.Tuple[float, float]], rem_surface: float,
                          rem_tiles: typing.List[typing.Tuple[float, float]],
                          solution: typing.Dict[typing.Tuple[float, float], typing.Tuple[float, float]],
                          total_cost: float):
+
+
+
         """
         Private function. Feel free to determine your own set of arguments.
         Will not be called from unit tests, but only by this function (recursively) and
         start_search
-
         TODO: don't forget to update the documentation after you implemented this function
-
-        :param pos: The set of bottom left corners on which we can potentially put tiles 
+        :param pos: The set of bottom left corners on which we can potentially put tiles
                     (initially only (0,0) ~ start filling the area from the bottom left)
         :param rem_surface: the remaining surface to be filled
         :param rem_tiles: the remaining tiles that are in the inventory
         :param solution: the partial solution (same structure as pos)
         :param total_cost: the total cost of the partial solution
         """
+
+        for position in pos:
+            for tile in rem_tiles:
+
+                config = [tile, self.rotate_tile(tile)]
+                tile_price = self.get_price(tile=tile)
+                tile_area = tile[0] * tile[1]
+
+                for configs in config:
+                    if self.tile_is_possible(tile=configs, cost_tile=tile_price, total_cost=total_cost, rem_surface=rem_surface):
+                        if self.can_place_tile(x=position[0], y=position[1], tile=configs, partial_solution=solution):
+
+
+                            pos = self.add_tile_to_solution(x=position[0], y=position[1], tile=configs, pos=solution, partial_solution= solution)
+                            rem_surface = rem_surface - tile_area
+                            rem_tiles = rem_tiles.pop(tile)
+                            total_cost = total_cost + tile_price
+
+                            self.recursive_search(pos=pos, rem_surface=rem_surface, rem_tiles=rem_tiles, solution)
+
+                            self.
+
+                            #Different update function
+                            del rem_tiles[tile]
+
+
+
+
         raise NotImplementedError()
 
     def start_search(self):
         """
         Function that starts the search for a tiling pattern that fills the given area
-        using the tiles in the inventory of Tegelaar. 
+        using the tiles in the inventory of Tegelaar.
         The backtracking itself is performed by _recursive_search, which will call itself
-        recursively.  
-
+        recursively.
         If you encounter a schedule that you already know to be invalid, you
         should backtrack and try another option.
         This function can be implemented by a single call to another function,
-        _build_schedule_recursive. You are allowed to change the argumentes of
+        _build_schedule_recursive. You are allowed to change the arguments of
         the function _build_schedule_recursive
-
-        :return: a tuple (tiling pattern, total cost) if a valid tiling pattern exists 
+        :return: a tuple (tiling pattern, total cost) if a valid tiling pattern exists
                  within the budget, otherwise None
                  Note: a valid tiling pattern as a dictionary mapping the bottom left corners
                  of tiles to the tiles used (width, height)
@@ -261,7 +257,6 @@ def visualize_solution(width: float, height: float,
                        solution: typing.Dict[typing.Tuple[float, float], typing.Tuple[float, float]]):
     """
     Function that visualizes a solution on a rectangular surface of width x height
-
     :param width: The width of the surface
     :param height: The height of the surface
     :param solution: The solution we want to visualize
