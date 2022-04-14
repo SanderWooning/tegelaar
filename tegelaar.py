@@ -36,9 +36,6 @@ class Tegelaar:
 
         :param tile: a tile (width_tile, height_tile)
         """
-        print(tile)
-        print(self.prices)
-        print(self.rotate_tile(tile))
 
         if tile in self.prices:
             return self.prices[tile]
@@ -183,15 +180,14 @@ class Tegelaar:
         """
         new_positions = []
 
-        partial_solution[(x,y)] = tile
+        partial_solution[(x, y)] = tile
 
         right_corner = (x + tile[0], y)
-        if right_corner not in pos:
+        if right_corner not in pos and right_corner[0] < self.width and right_corner[1] < self.height:
             new_positions.append(right_corner)
 
-
         top_corner = (x, y + tile[1])
-        if top_corner not in partial_solution:
+        if top_corner not in partial_solution and top_corner[0] < self.width and top_corner[1] < self.height:
             new_positions.append(top_corner)
 
         return new_positions
@@ -200,8 +196,6 @@ class Tegelaar:
                          rem_tiles: typing.List[typing.Tuple[float, float]],
                          solution: typing.Dict[typing.Tuple[float, float], typing.Tuple[float, float]],
                          total_cost: float):
-
-
 
         """
         Private function. Feel free to determine your own set of arguments.
@@ -224,25 +218,34 @@ class Tegelaar:
                 config = [tile, self.rotate_tile(tile)]
                 tile_price = self.get_price(tile=tile)
                 tile_area = tile[0] * tile[1]
+                total_area = rem_surface
 
-                for configs in config:
-                    if self.tile_is_possible(tile=configs, cost_tile=tile_price, total_cost=total_cost, rem_surface=rem_surface):
+                if self.tile_is_possible(tile=tile, cost_tile=tile_price, total_cost=total_cost,
+                                         rem_surface=rem_surface):
+
+                    for configs in config:
+
                         if self.can_place_tile(x=position[0], y=position[1], tile=configs, partial_solution=solution):
+                            res_postions = self.add_tile_to_solution(x=position[0], y=position[1], tile=configs, pos=solution,
+                                                            partial_solution=solution)
 
-                            pos = self.add_tile_to_solution(x=position[0], y=position[1], tile=configs, pos=solution, partial_solution= solution)
-                            rem_surface = rem_surface - tile_area
-                            rem_tiles = rem_tiles.pop(tile)
+
+                            new_pos = pos.add(res_postions)
+                            rem_surface = total_area - tile_area
+                            rem_tiles.remove(tile)
                             total_cost = total_cost + tile_price
-                            solution[position] = config
+                            solution[position] = configs
 
-                            self.recursive_search(pos=pos, rem_surface=rem_surface, rem_tiles=rem_tiles, solution=solution, total_cost=total_cost)
+                            if rem_surface == 0:
+                                return (solution, total_cost)
+                            else:
+                                self.recursive_search(pos=new_pos, rem_surface=rem_surface, rem_tiles=rem_tiles,
+                                                  solution=solution, total_cost=total_cost)
 
+        return None
 
-                            #Different update function
-                            del rem_tiles[tile]
-
-
-
+        print(solution)
+        print(rem_surface)
 
         raise NotImplementedError()
 
