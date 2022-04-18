@@ -149,9 +149,11 @@ class Tegelaar:
         and False otherwise
         """
 
+        # Out-of-bounds check
         if x + tile[0] > self.width or y + tile[1] > self.height:
             return False
 
+        # Overlap check
         if self.has_overlap(solution=partial_solution, position=(x, y), tile=tile):
             return False
 
@@ -212,57 +214,57 @@ class Tegelaar:
         :param total_cost: the total cost of the partial solution
         """
 
-        # Positive base-cases
+        # Positive base-case. Return the total
         if rem_surface == 0:
-            print(solution)
+            print(solution, total_cost)
             return solution, total_cost
 
-
+        # Negative Basecase for efficiency
         if len(rem_tiles) == 0:
             return None, None
 
-        # total_tile_surface = 0
-        # for tiles in rem_tiles:
-        #     total_tile_surface += (tiles[0] * tiles[1])
-        #
-        # if total_tile_surface < rem_surface:
-        #     return (None, None)
-
+        # Add copy to make sure pos is not being altered within the function itself.
         initial_pos = deepcopy(pos)
+
+        # Iterate over all available positions and try every tile in every configuration.
 
         for position in initial_pos:
             for tile in rem_tiles:
 
-                config = [tile, self.rotate_tile(tile)]
+
+                # Obtain certain parameters of the tile such as price and area.
+                configs = [tile, self.rotate_tile(tile)]
                 tile_price = self.get_price(tile=tile)
                 tile_area = tile[0] * tile[1]
-                total_area = rem_surface
 
                 if self.tile_is_possible(tile=tile, cost_tile=tile_price, total_cost=total_cost,
                                          rem_surface=rem_surface):
 
-                    for configs in config:
-                        if self.can_place_tile(x=position[0], y=position[1], tile=configs, partial_solution=solution):
-                            res_postions = self.add_tile_to_solution(x=position[0], y=position[1], tile=configs,
-                                                                     pos=pos,
-                                                                     partial_solution=solution)
+                    for config in configs:
+                        if self.can_place_tile(x=position[0], y=position[1], tile=config, partial_solution=solution):
+                            res_postions = self.add_tile_to_solution(x=position[0], y=position[1], tile=config,
+                                                                     pos=pos, partial_solution=solution)
 
                             pos.remove(position)
                             for i in res_postions:
                                 pos.add(i)
 
-                            rem_surface = total_area - tile_area
+                            # Update parameters to
+                            rem_surface = rem_surface - tile_area
                             rem_tiles.remove(tile)
                             total_cost = total_cost + tile_price
 
                             possible_solution = self.recursive_search(pos=pos, rem_surface=rem_surface, rem_tiles=rem_tiles,
                                                                       solution=solution, total_cost=total_cost)
 
+
+                            # If a solution if found, return it to the parent. Which results in the parent return it again and therefor ending up at the top node and returning.
                             if possible_solution != (None, None):
                                 return possible_solution
 
+                            # Return certain positions
                             pos.add(position)
-                            rem_surface = total_area
+                            rem_surface = rem_surface + tile_area
                             rem_tiles.append(tile)
                             total_cost = total_cost - tile_price
                             del solution[position]
