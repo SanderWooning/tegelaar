@@ -192,11 +192,11 @@ class Tegelaar:
         partial_solution[(x, y)] = tile
 
         right_corner = (x + tile[0], y)
-        if right_corner not in pos and right_corner[0] < self.width and right_corner[1] < self.height:
+        if right_corner not in pos:
             new_positions.append(right_corner)
 
         top_corner = (x, y + tile[1])
-        if top_corner not in pos and top_corner[0] < self.width and top_corner[1] < self.height:
+        if top_corner not in pos:
             new_positions.append(top_corner)
 
         return new_positions
@@ -220,7 +220,11 @@ class Tegelaar:
             5. Check if the tile is possible
             6. Iterate over all tile configurations (The normal tile and the rotated tile)
             7. Check if the tile overlaps with any current tiles in the partial_solution.
-            8.
+            8. Place tile
+            9. Different functions for updating tile-area parameters such a total_cost, positions,
+            10. Call function again (recursion)
+            11. Check if updated parameters result in a tiling solution. no result has been found, call function again (recurssion)
+            11. If not, undo actions by updating tile-area parameters to previous values.
 
         :param pos: The set of bottom left corners on which we can potentially put tiles 
                     (initially only (0,0) ~ start filling the area from the bottom left)

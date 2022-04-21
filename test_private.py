@@ -2,6 +2,7 @@ import typing
 import unittest
 
 from tegelaar import Tegelaar
+from tegelaar import visualize_solution
 
 
 class TestTegelaar(unittest.TestCase):
@@ -9,7 +10,6 @@ class TestTegelaar(unittest.TestCase):
     def test_backtracking_easy_square_asymetrical_board(self):
         # Test of a asymmetrical board for back-tracking.
 
-        # 4 tiles of 20x20 by 3 tiles of 20x20
         height = 60
         width = 80
         tiles = [(20, 20) for _ in range(11)] + [(30, 10)] + [(20, 20)]
@@ -24,11 +24,18 @@ class TestTegelaar(unittest.TestCase):
         self.assertEqual(tiling_pattern, solution)
         self.assertEqual(total_cost, solution_cost)
 
-
     def test_too_expensive_backtracking(self):
+        # Test for a too expensive problem within backtracking.
+
         height = 40
         width = 40
-        tiles = [(20,20),]
+        tiles = [(20, 20), (20, 20), (40, 20)]
+        prices = {(20, 20): 400, (40, 20): 800}
+        budget = 1200
+        tg = Tegelaar(width, height, tiles, prices, budget)
+        tiling_pattern, total_cost = tg.start_search()
+        self.assertEqual(tiling_pattern, None)
+        self.assertEqual(total_cost, None)
 
     def test_non_square_solution_backtracking(self):
         # Test for none-square for solution
@@ -46,13 +53,21 @@ class TestTegelaar(unittest.TestCase):
 
         tiling_outcome = False
 
-        # Two possible tiling-solutions are possible, therefor this statement.
+        # Two possible tiling-solutions are possible, therefore this statement.
         if tiling_pattern == solution_1 or tiling_pattern == solution_2:
             tiling_outcome = True
 
         self.assertTrue(tiling_outcome)
-
         self.assertEqual(total_cost, solution_cost)
 
 
-
+    def test_bigger_tiling_solution_board(self):
+        height = 1000
+        width = 1000
+        tiles = [(100, 125) for _ in range(50000)]
+        prices = {x: x[0] * x[1] for x in tiles}
+        budget = float("inf")
+        tg = Tegelaar(width, height, tiles, prices, budget)
+        tiling_pattern, total_cost = tg.start_search()
+        print(tiling_pattern)
+        #visualize_solution(height=height, width=width, solution=tiling_pattern)
