@@ -204,6 +204,19 @@ class Tegelaar:
         Will not be called from unit tests, but only by this function (recursively) and
         start_search
 
+        A recursive search algorithm with backtracking features. This function
+
+        Steps:
+            1. Check the positive-basecase (if the remaining surface is 0, which means the area is filled,
+                then return the tiling_solution).
+            2. Iterate over all positions.
+            3. Iterate over all tiles in that position
+            4. Get tile information and it's possible rotations
+            5. Check if the tile is possible
+            6. Iterate over all tile configurations (The normal tile and the rotated tile)
+            7. Check if the tile overlaps
+
+
         TODO: don't forget to update the documentation after you implemented this function
 
         :param pos: The set of bottom left corners on which we can potentially put tiles 
@@ -216,10 +229,9 @@ class Tegelaar:
 
         # Positive base-case. Return the total
         if rem_surface == 0:
-            print(solution, total_cost)
             return solution, total_cost
 
-        # Negative Basecase for efficiency
+        # Negative base-case for efficiency
         if len(rem_tiles) == 0:
             return None, None
 
@@ -227,42 +239,52 @@ class Tegelaar:
         initial_pos = deepcopy(pos)
 
         # Iterate over all available positions and try every tile in every configuration.
-
         for position in initial_pos:
             for tile in rem_tiles:
 
-
-                # Obtain certain parameters of the tile such as price and area.
+                # Obtain certain parameters of the tile such as configurations (possible rotations), price and area.
                 configs = [tile, self.rotate_tile(tile)]
                 tile_price = self.get_price(tile=tile)
                 tile_area = tile[0] * tile[1]
 
+                # Check if the tile itself is possible. If not continue.
                 if self.tile_is_possible(tile=tile, cost_tile=tile_price, total_cost=total_cost,
                                          rem_surface=rem_surface):
 
+                    # Iterate over all configurations of the tile
                     for config in configs:
+
+                        # Check if the configuration of the tile has any overlap.
                         if self.can_place_tile(x=position[0], y=position[1], tile=config, partial_solution=solution):
+
+                            # Place tile itself and get next positions
                             res_postions = self.add_tile_to_solution(x=position[0], y=position[1], tile=config,
                                                                      pos=pos, partial_solution=solution)
 
+                            # Remove the used position and add the new positions to the list.
                             pos.remove(position)
                             for i in res_postions:
                                 pos.add(i)
 
-                            # Update parameters to
+                            # Update parameters like remaining surface,
+                            # remaining tiles and the current cost of the tiling-solution
                             rem_surface = rem_surface - tile_area
                             rem_tiles.remove(tile)
                             total_cost = total_cost + tile_price
 
-                            possible_solution = self.recursive_search(pos=pos, rem_surface=rem_surface, rem_tiles=rem_tiles,
+
+                            possible_solution = self.recursive_search(pos=pos, rem_surface=rem_surface,
+                                                                      rem_tiles=rem_tiles,
                                                                       solution=solution, total_cost=total_cost)
 
+                            # If a solution if found, return it to the parent. Which results in the parent return it
+                            # again and therefore ending up at the top node and returning.
 
-                            # If a solution if found, return it to the parent. Which results in the parent return it again and therefor ending up at the top node and returning.
                             if possible_solution != (None, None):
                                 return possible_solution
 
-                            # Return certain positions
+                            # Return certain parameters such as the placed tile,
+                            # the rem_surface, rem_tiles and total-cost.
                             pos.add(position)
                             rem_surface = rem_surface + tile_area
                             rem_tiles.append(tile)
@@ -270,8 +292,6 @@ class Tegelaar:
                             del solution[position]
 
         return None, None
-
-
 
     def start_search(self):
         """
