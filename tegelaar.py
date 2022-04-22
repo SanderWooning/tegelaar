@@ -252,8 +252,13 @@ class Tegelaar:
         for position in initial_pos:
             for tile in rem_tiles:
 
-                # Obtain certain parameters of the tile such as configurations (possible rotations), price and area.
-                configs = [tile, self.rotate_tile(tile)]
+                # Only add the rotated tile to configs if the tile is not square.
+                if tile[0] != tile[1]:
+                    configs = [tile, self.rotate_tile(tile)]
+                else:
+                    configs = [tile]
+
+                # Obtain certain parameters of the tile such as price and area.
                 tile_price = self.get_price(tile=tile)
                 tile_area = tile[0] * tile[1]
 
