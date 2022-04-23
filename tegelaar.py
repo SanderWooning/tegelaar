@@ -268,7 +268,7 @@ class Tegelaar:
                 tile_price = self.get_price(tile=tile)
                 tile_area = tile[0] * tile[1]
 
-                # Check if the tile itself is possible. If not continue.
+                # Check if the tile itself is possible.
                 if self.tile_is_possible(tile=tile, cost_tile=tile_price, total_cost=total_cost,
                                          rem_surface=rem_surface):
 
