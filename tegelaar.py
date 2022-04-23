@@ -176,6 +176,12 @@ class Tegelaar:
         (because 2 new tiles can be placed - on top of the tile on (x,y) and to the right
         of that tile)
 
+        Steps:
+            1. Add entry to solution dictionary
+            2. Create new position for right hand corner. If it is not in pos already, append the position list
+            3. Create new position for top hand corner. If it is not in pos already, append the position list.
+
+
         :param x: The x coordinate where the tile will be placed
         :param y: The y coordinate where the tile will be placed
         :param tile: The tile that is being placed on location (x,y)
@@ -237,7 +243,7 @@ class Tegelaar:
                  within the budget, otherwise return None, None
         """
 
-        # Positive base-case.
+        # Positive base-case. First found tiling pattern.
         if rem_surface == 0:
             return solution, total_cost
 
@@ -252,7 +258,7 @@ class Tegelaar:
         for position in initial_pos:
             for tile in rem_tiles:
 
-                # Only add the rotated tile to configs if the tile is not square.
+                # For efficiency, only add the rotated tile to configs if the tile is not square.
                 if tile[0] != tile[1]:
                     configs = [tile, self.rotate_tile(tile)]
                 else:

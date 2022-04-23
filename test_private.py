@@ -1,17 +1,8 @@
+import time
 import typing
 import unittest
 
 from tegelaar import Tegelaar
-from tegelaar import visualize_solution
-
-tegels = [(20,20), (20,20), (20,20), (30,10)]
-
-empty_array = []
-for teg in tegels:
-    empty_array.append(teg)
-
-print(empty_array)
-
 
 
 class TestTegelaar(unittest.TestCase):
@@ -70,12 +61,38 @@ class TestTegelaar(unittest.TestCase):
         self.assertEqual(total_cost, solution_cost)
 
 
-    def test_bigger_tiling_solution_board(self):
-        height = 1000
-        width = 1000
-        tiles = [(100, 100) for _ in range(50000)]
+    """
+    These two functions below are used for the report to get the execution times of the algorithm. 
+    They are commented out because of the long run time of the function. 
+    
+    Due to 
+    
+    """
+
+
+
+    def function_for_exe_times(self, index):
+        height = 2000000
+        width = 1000000
+        tile_amount = int(4 ** index)
+        tile_heigth = 2000000 / (2 ** index)
+        tile_width = 1000000 / (2 ** index)
+
+        print(f"Tile amount{tile_amount} -- tile: ({tile_width, tile_heigth}")
+
+        tiles = [(tile_width, tile_heigth) for _ in range(tile_amount)]
         prices = {x: x[0] * x[1] for x in tiles}
         budget = float("inf")
         tg = Tegelaar(width, height, tiles, prices, budget)
         tiling_pattern, total_cost = tg.start_search()
-        #visualize_solution(height=height, width=width, solution=tiling_pattern)
+        print(tiling_pattern)
+
+    def test_get_exe_times(self):
+
+        values = [i/2 for i in range(2,20)]
+
+        for value in values:
+            starting_time = time.time()
+            self.function_for_exe_times(value)
+            print("--- %s seconds ---" % (time.time() - starting_time))
+
