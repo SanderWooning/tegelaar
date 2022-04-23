@@ -86,7 +86,7 @@ class TestTegelaar(unittest.TestCase):
     #
     # def test_get_exe_times(self):
     #
-    #     values = [i for i in range(1,20)]
+    #     values = [i/2 for i in range(2,20)]
     #
     #     for value in values:
     #         starting_time = time.time()
